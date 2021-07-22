@@ -579,4 +579,10 @@
     </queues>
    </batch_system>
 
+   <batch_system MACH="spock" type="slurm">
+     <queues>
+       <queue walltimemax="00:30" default="true">ecp</queue>
+       <queue walltimemax="00:30">batch</queue>
+     </queues>
+   </batch_system>
 </config_batch>
