@@ -838,12 +838,16 @@ end subroutine clubb_init_cnst
     call addfld ('RELVAR', (/ 'lev' /),  'A',        '-', 'Relative cloud water variance')
     call addfld ('RELVARC', (/ 'lev' /),  'A',        '-', 'Relative cloud water variance', flag_xyfill=.true.,fill_value=fillvalue)
     call addfld ('CONCLD', (/ 'lev' /),  'A',        'fraction', 'Convective cloud cover')
+    call addfld ('DEEPCU', (/ 'lev' /),  'A',        'fraction', 'Deep convective cloud cover')
+
     call addfld ('CMELIQ', (/ 'lev' /),  'A',        'kg/kg/s', 'Rate of cond-evap of liq within the cloud')
 !PMA gustiness output fields
     call addfld ('VMAGGUST',       horiz_only,     'A',             '-', 'Total gustiness enhancement')
     call addfld ('VMAGDP',        horiz_only,     'A',             '-', 'ZM gustiness enhancement')
     call addfld ('VMAGCL',        horiz_only,     'A',             '-', 'CLUBB gustiness enhancement')
     call addfld ('TPERTBLT',        horiz_only,     'A',             'K', 'perturbation temperature at PBL top')
+    call addfld ('ALST', (/ 'lev' /),  'A',            'fraction', 'Lquid stratus cloud fraction')
+    call addfld ('AIST', (/ 'lev' /),  'A',            'fraction', 'Ice stratus cloud fraction')
 
     !  Initialize statistics, below are dummy variables
     dum1 = 300._r8
@@ -2738,6 +2742,9 @@ end subroutine clubb_init_cnst
    call outfld( 'QT',               qt_output,               pcols, lchnk )
    call outfld( 'SL',               sl_output,               pcols, lchnk )
    call outfld( 'CONCLD',           concld,                  pcols, lchnk )
+   call outfld( 'DEEPCU',           deepcu,                  pcols, lchnk )
+   call outfld( 'ALST',               alst,                  pcols, lchnk )
+   call outfld( 'AIST',               aist,                  pcols, lchnk )
 
    !  Output CLUBB history here
    if (l_stats) then 
