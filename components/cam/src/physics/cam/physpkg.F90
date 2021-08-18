@@ -1798,7 +1798,8 @@ end if ! l_ac_energy_chk
     endif
 
     call diag_phys_tend_writeout (state, pbuf,  tend, ztodt, tmp_q, tmp_cldliq, tmp_cldice, &
-         tmp_t, qini, cldliqini, cldiceini)
+         tmp_t, qini, cldliqini, cldiceini, &
+         cam_in%shf(:ncol), cam_in%cflx(:ncol,1)) ! add surface fluxes for entrain_diag()
 
     ! DCAPE-ULL: record current state of T and q for computing dynamical tendencies
     !            the calculation follows the same format as in diag_phys_tend_writeout

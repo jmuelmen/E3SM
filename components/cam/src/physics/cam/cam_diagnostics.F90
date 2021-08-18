@@ -2170,7 +2170,7 @@ end subroutine diag_export
 !#######################################################################
 
 subroutine diag_phys_tend_writeout(state, pbuf,  tend, ztodt, tmp_q, tmp_cldliq, tmp_cldice, &
-                                   tmp_t, qini, cldliqini, cldiceini)
+                                   tmp_t, qini, cldliqini, cldiceini, hflux_srf, qflux_srf)
 
    !---------------------------------------------------------------
    !
@@ -2195,6 +2195,8 @@ subroutine diag_phys_tend_writeout(state, pbuf,  tend, ztodt, tmp_q, tmp_cldliq,
    real(r8)           , intent(in   ) :: qini      (pcols,pver) ! tracer fields at beginning of physics
    real(r8)           , intent(in   ) :: cldliqini (pcols,pver) ! tracer fields at beginning of physics
    real(r8)           , intent(in   ) :: cldiceini (pcols,pver) ! tracer fields at beginning of physics
+   real(r8)           , intent(in   ) :: hflux_srf (pcols)      ! surface sensible heat flux (for entrainment diagnostics)
+   real(r8)           , intent(in   ) :: qflux_srf (pcols)      ! surface moisture flux (for entrainment diagnostics)
 
    !---------------------------Local workspace-----------------------------
 
