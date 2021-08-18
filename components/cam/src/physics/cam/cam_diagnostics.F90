@@ -665,6 +665,8 @@ subroutine diag_init()
       call addfld (dmetendnam(ixcldice),(/ 'lev' /), 'A','kg/kg/s', &
            trim(cnst_name(ixcldice))//' dme adjustment tendency (FV) ')
    end if
+   call addfld ('ENTRAIN_THETA',horiz_only, 'A','kg/m2/s','Entrainment flux at PBL top diagnosed from theta_l budget'                         )
+   call addfld ('ENTRAIN_Q'   ,horiz_only, 'A','kg/m2/s','Entrainment flux at PBL top diagnosed from q_t budget'                             )
 
    if ( history_budget ) then
       call add_default ('PTTEND'          , history_budget_histfile_num, ' ')
@@ -2221,6 +2223,7 @@ subroutine diag_phys_tend_writeout(state, pbuf,  tend, ztodt, tmp_q, tmp_cldliq,
    real(r8) :: prao_grid(pcols,pver) ! autoconversion rate
    real(r8), pointer :: qrl(:,:), qrs(:,:) ! longwave/shortwave heating rates
    real(r8) :: pttend(pcols,pver), pqtend(pcols,pver), pqltend(pcols,pver) ! physics total tendencies
+   real(r8) :: entrain_theta(pcols), entrain_q(pcols) ! entrainment calculation outputs
    !-----------------------------------------------------------------------
 
    lchnk = state%lchnk
@@ -2314,6 +2317,8 @@ subroutine diag_phys_tend_writeout(state, pbuf,  tend, ztodt, tmp_q, tmp_cldliq,
    qrs_idx = pbuf_get_index('QRS')
    call pbuf_get_field(pbuf, qrl_idx, qrl)
    call pbuf_get_field(pbuf, qrs_idx, qrs)
+   call outfld('ENTRAIN_THETA', entrain_theta, pcols, lchnk)
+   call outfld('ENTRAIN_Q', entrain_q, pcols, lchnk)
 end subroutine diag_phys_tend_writeout
 
 !#######################################################################
