@@ -2217,6 +2217,8 @@ subroutine diag_phys_tend_writeout(state, pbuf,  tend, ztodt, tmp_q, tmp_cldliq,
    real(r8), pointer :: pblh(:)  ! pointer to diagnosed PBL height (from pbuf)
    ! real(r8), pointer :: prco_grid(:,:) ! accretion rate
    ! real(r8), pointer :: prao_grid(:,:) ! autoconversion rate
+   real(r8) :: prco_grid(pcols,pver) ! accretion rate
+   real(r8) :: prao_grid(pcols,pver) ! autoconversion rate
    real(r8), pointer :: qrl(:,:), qrs(:,:) ! longwave/shortwave heating rates
    real(r8) :: pttend(pcols,pver), pqtend(pcols,pver), pqltend(pcols,pver) ! physics total tendencies
    !-----------------------------------------------------------------------
@@ -2305,6 +2307,9 @@ subroutine diag_phys_tend_writeout(state, pbuf,  tend, ztodt, tmp_q, tmp_cldliq,
    ! accretl_idx = pbuf_get_index('accretl')
    ! call pbuf_get_field(pbuf, autocl_idx, prco_grid)
    ! call pbuf_get_field(pbuf, accretl_idx, prao_grid)
+   !! FIXME kluge for now:
+   prco_grid(:ncol,:pver) = 0._r8
+   prao_grid(:ncol,:pver) = 0._r8
    qrl_idx = pbuf_get_index('QRL')
    qrs_idx = pbuf_get_index('QRS')
    call pbuf_get_field(pbuf, qrl_idx, qrl)
