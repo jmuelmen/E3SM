@@ -2208,10 +2208,12 @@ subroutine diag_phys_tend_writeout(state, pbuf,  tend, ztodt, tmp_q, tmp_cldliq,
    real(r8) :: rtdt
    real(r8) :: heat_glob         ! global energy integral (FV only)
    integer  :: ixcldice, ixcldliq! constituent indices for cloud liquid and ice water.
+   integer  :: qrl_idx, qrs_idx ! longwave/shortwave heating indices in pbuf
    ! CAM pointers to get variables from the physics buffer
    real(r8), pointer, dimension(:,:) :: t_ttend  
    integer  :: itim_old
 
+   real(r8), pointer :: qrl(:,:), qrs(:,:) ! longwave/shortwave heating rates
    real(r8) :: pttend(pcols,pver), pqtend(pcols,pver), pqltend(pcols,pver) ! physics total tendencies
    !-----------------------------------------------------------------------
 
@@ -2292,6 +2294,10 @@ subroutine diag_phys_tend_writeout(state, pbuf,  tend, ztodt, tmp_q, tmp_cldliq,
    !! update physics buffer with this time-step's temperature
    t_ttend(:ncol,:) = state%t(:ncol,:)
 
+   qrl_idx = pbuf_get_index('QRL')
+   qrs_idx = pbuf_get_index('QRS')
+   call pbuf_get_field(pbuf, qrl_idx, qrl)
+   call pbuf_get_field(pbuf, qrs_idx, qrs)
 end subroutine diag_phys_tend_writeout
 
 !#######################################################################
