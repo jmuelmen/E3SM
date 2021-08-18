@@ -2216,7 +2216,6 @@ subroutine diag_phys_tend_writeout(state, pbuf,  tend, ztodt, tmp_q, tmp_cldliq,
    ! CAM pointers to get variables from the physics buffer
    real(r8), pointer, dimension(:,:) :: t_ttend  
    integer  :: itim_old
-
    real(r8), pointer :: pblh(:)  ! pointer to diagnosed PBL height (from pbuf)
    ! real(r8), pointer :: prco_grid(:,:) ! accretion rate
    ! real(r8), pointer :: prao_grid(:,:) ! autoconversion rate
@@ -2225,6 +2224,8 @@ subroutine diag_phys_tend_writeout(state, pbuf,  tend, ztodt, tmp_q, tmp_cldliq,
    real(r8), pointer :: qrl(:,:), qrs(:,:) ! longwave/shortwave heating rates
    real(r8) :: pttend(pcols,pver), pqtend(pcols,pver), pqltend(pcols,pver) ! physics total tendencies
    real(r8) :: entrain_theta(pcols), entrain_q(pcols) ! entrainment calculation outputs
+   integer  :: i
+   
    !-----------------------------------------------------------------------
 
    lchnk = state%lchnk
@@ -2318,8 +2319,24 @@ subroutine diag_phys_tend_writeout(state, pbuf,  tend, ztodt, tmp_q, tmp_cldliq,
    qrs_idx = pbuf_get_index('QRS')
    call pbuf_get_field(pbuf, qrl_idx, qrl)
    call pbuf_get_field(pbuf, qrs_idx, qrs)
+
+   !! entrainment diagnostics: do the actual calculation
+   do i = 1, ncol
+      call entrainment_diags_eam(pver, &
+           state%pdel(i, :pver), state%zm(i, :pver) + state%phis(i)*rga, &
+           state%pmid(i, :pver), state%t(i, :pver), state%q(i, :pver, 1), state%q(i, :pver, ixcldliq), &
+           pttend(i, :pver), pqtend(i, :pver), pqltend(i, :pver), &
+           qrl(i, :pver) + qrs(i, :pver), &
+           prco_grid(i, :pver) + prao_grid(i, :pver), &
+           hflux_srf(i), qflux_srf(i), &
+           pblh(i), &
+           entrain_theta(i), entrain_q(i))
+   end do
+
    call outfld('ENTRAIN_THETA', entrain_theta, pcols, lchnk)
    call outfld('ENTRAIN_Q', entrain_q, pcols, lchnk)
+   
+
 end subroutine diag_phys_tend_writeout
 
 !#######################################################################
