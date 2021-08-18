@@ -2182,6 +2182,7 @@ subroutine diag_phys_tend_writeout(state, pbuf,  tend, ztodt, tmp_q, tmp_cldliq,
 
    use check_energy,    only: check_energy_get_integrals
    use physconst,       only: cpair, rga
+   use entrainment_diags, only: entrainment_diags_eam
    
    ! Arguments
 
