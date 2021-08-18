@@ -2212,6 +2212,7 @@ subroutine diag_phys_tend_writeout(state, pbuf,  tend, ztodt, tmp_q, tmp_cldliq,
    real(r8), pointer, dimension(:,:) :: t_ttend  
    integer  :: itim_old
 
+   real(r8) :: pttend(pcols,pver), pqtend(pcols,pver), pqltend(pcols,pver) ! physics total tendencies
    !-----------------------------------------------------------------------
 
    lchnk = state%lchnk
@@ -2248,7 +2249,8 @@ subroutine diag_phys_tend_writeout(state, pbuf,  tend, ztodt, tmp_q, tmp_cldliq,
    ! Total physics tendency for Temperature
 
    call outfld('PTTEND',ftem3, pcols, lchnk )
-
+   pttend(:ncol,:pver) = ftem3(:ncol,:pver)
+   
    ! Tendency for dry mass adjustment of q (valid for FV only)
 
    if (dycore_is('LR')) then
@@ -2264,10 +2266,12 @@ subroutine diag_phys_tend_writeout(state, pbuf,  tend, ztodt, tmp_q, tmp_cldliq,
 
    if ( cnst_cam_outfld(       1) ) then
       ftem3(:ncol,:pver) = (state%q(:ncol,:pver,       1) - qini     (:ncol,:pver) )*rtdt
+      pqtend(:ncol,:pver) =ftem3(:ncol,:pver)
       call outfld (ptendnam(       1), ftem3, pcols, lchnk)
    end if
    if ( cnst_cam_outfld(ixcldliq) ) then
       ftem3(:ncol,:pver) = (state%q(:ncol,:pver,ixcldliq) - cldliqini(:ncol,:pver) )*rtdt
+      pqltend(:ncol,:pver) =ftem3(:ncol,:pver)
       call outfld (ptendnam(ixcldliq), ftem3, pcols, lchnk)
    end if
    if ( cnst_cam_outfld(ixcldice) ) then
