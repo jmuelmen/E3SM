@@ -2208,12 +2208,15 @@ subroutine diag_phys_tend_writeout(state, pbuf,  tend, ztodt, tmp_q, tmp_cldliq,
    real(r8) :: rtdt
    real(r8) :: heat_glob         ! global energy integral (FV only)
    integer  :: ixcldice, ixcldliq! constituent indices for cloud liquid and ice water.
+   integer  :: autocl_idx, accretl_idx ! autoconversion and accretion rate indices in pbuf
    integer  :: qrl_idx, qrs_idx ! longwave/shortwave heating indices in pbuf
    ! CAM pointers to get variables from the physics buffer
    real(r8), pointer, dimension(:,:) :: t_ttend  
    integer  :: itim_old
 
    real(r8), pointer :: pblh(:)  ! pointer to diagnosed PBL height (from pbuf)
+   ! real(r8), pointer :: prco_grid(:,:) ! accretion rate
+   ! real(r8), pointer :: prao_grid(:,:) ! autoconversion rate
    real(r8), pointer :: qrl(:,:), qrs(:,:) ! longwave/shortwave heating rates
    real(r8) :: pttend(pcols,pver), pqtend(pcols,pver), pqltend(pcols,pver) ! physics total tendencies
    !-----------------------------------------------------------------------
@@ -2297,6 +2300,11 @@ subroutine diag_phys_tend_writeout(state, pbuf,  tend, ztodt, tmp_q, tmp_cldliq,
 
    !! entrainment diagnostics: gather the fields that we don't already have access to
    call pbuf_get_field(pbuf, pblh_idx,  pblh)
+   ! !! trying to access autocl and accretl this way crashes
+   ! autocl_idx = pbuf_get_index('autocl')
+   ! accretl_idx = pbuf_get_index('accretl')
+   ! call pbuf_get_field(pbuf, autocl_idx, prco_grid)
+   ! call pbuf_get_field(pbuf, accretl_idx, prao_grid)
    qrl_idx = pbuf_get_index('QRL')
    qrs_idx = pbuf_get_index('QRS')
    call pbuf_get_field(pbuf, qrl_idx, qrl)
