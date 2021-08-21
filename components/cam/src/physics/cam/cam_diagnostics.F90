@@ -2217,6 +2217,7 @@ subroutine diag_phys_tend_writeout(state, pbuf,  tend, ztodt, tmp_q, tmp_cldliq,
    real(r8), pointer, dimension(:,:) :: t_ttend  
    integer  :: itim_old
    real(r8), pointer :: pblh(:)  ! pointer to diagnosed PBL height (from pbuf)
+   real(r8) :: z3(pcols,pver)   ! geopotential height
    ! real(r8), pointer :: prco_grid(:,:) ! accretion rate
    ! real(r8), pointer :: prao_grid(:,:) ! autoconversion rate
    real(r8) :: prco_grid(pcols,pver) ! accretion rate
@@ -2224,7 +2225,7 @@ subroutine diag_phys_tend_writeout(state, pbuf,  tend, ztodt, tmp_q, tmp_cldliq,
    real(r8), pointer :: qrl(:,:), qrs(:,:) ! longwave/shortwave heating rates
    real(r8) :: pttend(pcols,pver), pqtend(pcols,pver), pqltend(pcols,pver) ! physics total tendencies
    real(r8) :: entrain_theta(pcols), entrain_q(pcols) ! entrainment calculation outputs
-   integer  :: i
+   integer  :: i, k
    
    !-----------------------------------------------------------------------
 
@@ -2320,10 +2321,14 @@ subroutine diag_phys_tend_writeout(state, pbuf,  tend, ztodt, tmp_q, tmp_cldliq,
    call pbuf_get_field(pbuf, qrl_idx, qrl)
    call pbuf_get_field(pbuf, qrs_idx, qrs)
 
+   do k = 1, pver
+      z3(:ncol,k) = state%zm(:ncol,k) + state%phis(:ncol)*rga
+   end do
+
    !! entrainment diagnostics: do the actual calculation
    do i = 1, ncol
       call entrainment_diags_eam(pver, &
-           state%pdel(i, :pver), state%zm(i, :pver) + state%phis(i)*rga, &
+           state%pdel(i, :pver), z3(i, :pver), &
            state%pmid(i, :pver), state%t(i, :pver), state%q(i, :pver, 1), state%q(i, :pver, ixcldliq), &
            pttend(i, :pver), pqtend(i, :pver), pqltend(i, :pver), &
            qrl(i, :pver) + qrs(i, :pver), &
