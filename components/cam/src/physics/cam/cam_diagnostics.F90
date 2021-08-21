@@ -668,6 +668,23 @@ subroutine diag_init()
    call addfld ('ENTRAIN_THETA',horiz_only, 'A','kg/m2/s','Entrainment flux at PBL top diagnosed from theta_l budget'                         )
    call addfld ('ENTRAIN_Q'   ,horiz_only, 'A','kg/m2/s','Entrainment flux at PBL top diagnosed from q_t budget'                             )
 
+   call addfld('ENTRAIN_DEBUG_DP',	(/ 'lev' /) , 'A', '', 'entrainment debugging')
+   call addfld('ENTRAIN_DEBUG_Z',	(/ 'lev' /) , 'A', '', 'entrainment debugging')
+   call addfld('ENTRAIN_DEBUG_P',	(/ 'lev' /) , 'A', '', 'entrainment debugging')
+   call addfld('ENTRAIN_DEBUG_T',	(/ 'lev' /) , 'A', '', 'entrainment debugging')
+   call addfld('ENTRAIN_DEBUG_Q',	(/ 'lev' /) , 'A', '', 'entrainment debugging')
+   call addfld('ENTRAIN_DEBUG_QL',	(/ 'lev' /) , 'A', '', 'entrainment debugging')
+   call addfld('ENTRAIN_DEBUG_DTDT',	(/ 'lev' /) , 'A', '', 'entrainment debugging')
+   call addfld('ENTRAIN_DEBUG_DQDT',	(/ 'lev' /) , 'A', '', 'entrainment debugging')
+   call addfld('ENTRAIN_DEBUG_DQLDT',	(/ 'lev' /) , 'A', '', 'entrainment debugging')
+   call addfld('ENTRAIN_DEBUG_QRL',	(/ 'lev' /) , 'A', '', 'entrainment debugging')
+   call addfld('ENTRAIN_DEBUG_QRS',	(/ 'lev' /) , 'A', '', 'entrainment debugging')
+   call addfld('ENTRAIN_DEBUG_PRCO',	(/ 'lev' /) , 'A', '', 'entrainment debugging')
+   call addfld('ENTRAIN_DEBUG_PRAO',	(/ 'lev' /) , 'A', '', 'entrainment debugging')
+   call addfld('ENTRAIN_DEBUG_HFLUX',	horiz_only  , 'A', '', 'entrainment debugging')
+   call addfld('ENTRAIN_DEBUG_QFLUX',	horiz_only  , 'A', '', 'entrainment debugging')
+   call addfld('ENTRAIN_DEBUG_PBLH',	horiz_only  , 'A', '', 'entrainment debugging')
+
    if ( history_budget ) then
       call add_default ('PTTEND'          , history_budget_histfile_num, ' ')
       call add_default (ptendnam(       1), history_budget_histfile_num, ' ')
@@ -2340,6 +2357,40 @@ subroutine diag_phys_tend_writeout(state, pbuf,  tend, ztodt, tmp_q, tmp_cldliq,
 
    call outfld('ENTRAIN_THETA', entrain_theta, pcols, lchnk)
    call outfld('ENTRAIN_Q', entrain_q, pcols, lchnk)
+
+   !! input fields, output for debugging
+   ! state%pdel		    	
+   ! state%zm + state%phis*rga, 
+   ! state%pmid
+   ! state%t
+   ! state%q(:, :, 1)
+   ! state%q(:, :, ixcldliq)
+   ! pttend
+   ! pqtend
+   ! pqltend
+   ! qrl
+   ! qrs
+   ! prco_grid
+   ! prao_grid
+   ! hflux_srf
+   ! qflux_srf
+   ! pblh
+   call outfld('ENTRAIN_DEBUG_DP',	state%pdel               , pcols, lchnk)
+   call outfld('ENTRAIN_DEBUG_Z',	z3			 , pcols, lchnk)
+   call outfld('ENTRAIN_DEBUG_P',	state%pmid               , pcols, lchnk)
+   call outfld('ENTRAIN_DEBUG_T',	state%t                  , pcols, lchnk)
+   call outfld('ENTRAIN_DEBUG_Q',	state%q(:, :, 1)         , pcols, lchnk)
+   call outfld('ENTRAIN_DEBUG_QL',	state%q(:, :, ixcldliq)  , pcols, lchnk)
+   call outfld('ENTRAIN_DEBUG_DTDT',	pttend                   , pcols, lchnk)
+   call outfld('ENTRAIN_DEBUG_DQDT',	pqtend                   , pcols, lchnk)
+   call outfld('ENTRAIN_DEBUG_DQLDT',	pqltend                  , pcols, lchnk)
+   call outfld('ENTRAIN_DEBUG_QRL',	qrl                      , pcols, lchnk)
+   call outfld('ENTRAIN_DEBUG_QRS',	qrs                      , pcols, lchnk)
+   call outfld('ENTRAIN_DEBUG_PRCO',	prco_grid                , pcols, lchnk)
+   call outfld('ENTRAIN_DEBUG_PRAO',	prao_grid                , pcols, lchnk)
+   call outfld('ENTRAIN_DEBUG_HFLUX',	hflux_srf                , pcols, lchnk)
+   call outfld('ENTRAIN_DEBUG_QFLUX',	qflux_srf                , pcols, lchnk)
+   call outfld('ENTRAIN_DEBUG_PBLH',	pblh                     , pcols, lchnk)
    
 
 end subroutine diag_phys_tend_writeout
