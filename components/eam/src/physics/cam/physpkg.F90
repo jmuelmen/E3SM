@@ -1491,6 +1491,7 @@ subroutine tphysac (ztodt,   cam_in,  &
     real(r8), pointer, dimension(:,:) :: cldliqini
     real(r8), pointer, dimension(:,:) :: cldiceini
     real(r8), pointer, dimension(:,:) :: dtcore
+    real(r8), pointer, dimension(:,:) :: dqcore
     real(r8), pointer, dimension(:,:) :: ast     ! relative humidity cloud fraction 
 
     logical :: do_clubb_sgs 
@@ -1544,6 +1545,8 @@ subroutine tphysac (ztodt,   cam_in,  &
 
     ifld = pbuf_get_index('DTCORE')
     call pbuf_get_field(pbuf, ifld, dtcore, start=(/1,1,itim_old/), kount=(/pcols,pver,1/) )
+    ifld = pbuf_get_index('DQCORE')
+    call pbuf_get_field(pbuf, ifld, dqcore, start=(/1,1,itim_old/), kount=(/pcols,pver,1/) )
 
     call pbuf_get_field(pbuf, tini_idx, tini)
     call pbuf_get_field(pbuf, qini_idx, qini)
@@ -1766,6 +1769,7 @@ if (l_ac_energy_chk) then
     ! store dse after tphysac in buffer
     do k = 1,pver
        dtcore(:ncol,k) = state%t(:ncol,k)
+       dqcore(:ncol,k) = state%q(:ncol,k,1)
     end do
 
     !
@@ -1981,6 +1985,7 @@ subroutine tphysbc (ztodt,               &
     real(r8), pointer, dimension(:,:) :: cldliqini
     real(r8), pointer, dimension(:,:) :: cldiceini
     real(r8), pointer, dimension(:,:) :: dtcore
+    real(r8), pointer, dimension(:,:) :: dqcore
 
     real(r8), pointer, dimension(:,:,:) :: fracis  ! fraction of transported species that are insoluble
 
@@ -2145,6 +2150,8 @@ subroutine tphysbc (ztodt,               &
 
     ifld   =  pbuf_get_index('DTCORE')
     call pbuf_get_field(pbuf, ifld, dtcore, start=(/1,1,itim_old/), kount=(/pcols,pver,1/) )
+    ifld   =  pbuf_get_index('DQCORE')
+    call pbuf_get_field(pbuf, ifld, dqcore, start=(/1,1,itim_old/), kount=(/pcols,pver,1/) )
 
     ifld    = pbuf_get_index('FRACIS')
     call pbuf_get_field(pbuf, ifld, fracis, start=(/1,1,1/), kount=(/pcols, pver, pcnst/)  )
@@ -2272,8 +2279,10 @@ if (l_bc_energy_fix) then
     if( nstep > dyn_time_lvls-1 ) then
        do k = 1,pver
           dtcore(:ncol,k) = (tini(:ncol,k) - dtcore(:ncol,k))/(ztodt) + tend%dTdt(:ncol,k)
+          dqcore(:ncol,k) = (qini(:ncol,k) - dqcore(:ncol,k))/(ztodt) 
        end do
        call outfld( 'DTCORE', dtcore, pcols, lchnk )
+       call outfld( 'DQCORE', dqcore, pcols, lchnk )
     end if
 
     call t_stopf('energy_fixer')
