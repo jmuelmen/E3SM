@@ -81,6 +81,7 @@ module check_energy
   
   integer  :: teout_idx  = 0       ! teout index in physics buffer 
   integer  :: dtcore_idx = 0       ! dtcore index in physics buffer 
+  integer  :: dqcore_idx = 0       ! dqcore index in physics buffer 
 
   type check_tracers_data
      real(r8), allocatable :: tracer(:,:) ! initial vertically integrated total (kinetic + static) energy
@@ -143,10 +144,12 @@ end subroutine check_energy_setopts
 
     call pbuf_add_field('TEOUT', 'global',dtype_r8 , (/pcols,dyn_time_lvls/),      teout_idx)
     call pbuf_add_field('DTCORE','global',dtype_r8,  (/pcols,pver,dyn_time_lvls/),dtcore_idx)
+    call pbuf_add_field('DQCORE','global',dtype_r8,  (/pcols,pver,dyn_time_lvls/),dqcore_idx)
 
     if(is_subcol_on()) then
       call pbuf_register_subcol('TEOUT', 'phys_register', teout_idx)
       call pbuf_register_subcol('DTCORE', 'phys_register', dtcore_idx)
+      call pbuf_register_subcol('DQCORE', 'phys_register', dqcore_idx)
     end if
 
   end subroutine check_energy_register
@@ -199,6 +202,7 @@ end subroutine check_energy_get_integrals
     call addfld('TEFIX', horiz_only,    'A', 'W/m2', 'Total energy after fixer')
     call addfld('EFIX',   horiz_only,  'A', 'W/m2', 'Effective sensible heat flux due to energy fixer')
     call addfld('DTCORE', (/ 'lev' /), 'A', 'K/s' , 'T tendency due to dynamical core')
+    call addfld('DQCORE', (/ 'lev' /), 'A', 'kg/kg/s' , 'Q tendency due to dynamical core')
 
     call addfld('BC01Q', horiz_only,   'I', 'kg/m2', 'q after process')
     call addfld('BC01QL', horiz_only,  'I', 'kg/m2', 'ql after process')
@@ -225,6 +229,7 @@ end subroutine check_energy_get_integrals
 
     if ( history_budget ) then
        call add_default ('DTCORE   '  , history_budget_histfile_num, ' ')
+       call add_default ('DQCORE   '  , history_budget_histfile_num, ' ')
     end if
 
     if(ieflx_opt>0) then 
