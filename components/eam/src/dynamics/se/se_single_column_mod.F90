@@ -19,6 +19,7 @@ implicit none
 
 public scm_setinitial
 public scm_setfield
+public scm_bruteforce_omega
 public apply_SC_forcing
 
 !=========================================================================
@@ -121,6 +122,29 @@ subroutine scm_setfield(elem,iop_update_phase1)
   end do
 
 end subroutine scm_setfield
+
+subroutine scm_bruteforce_omega(elem,iop_update_phase1)
+
+  implicit none
+
+  logical, intent(in) :: iop_update_phase1
+  type(element_t), intent(inout) :: elem(:)
+
+  integer i, j, k, ie
+
+  do ie=1,nelemd
+    if (have_ps .and. use_replay .and. .not. iop_update_phase1) elem(ie)%state%ps_v(:,:,:) = psobs
+    if (have_ps .and. .not. use_replay) elem(ie)%state%ps_v(:,:,:) = psobs
+    do i=1, PLEV
+       if (have_omega .and. iop_update_phase1) then
+          ! add a time-dependent offset of +- 0.06 Pa s^-1 (~50 hPa d^-1) that switches signs every 4 time steps
+          elem(ie)%derived%omega_p(:,:,i) = wfld(i) + 0.12 * (mod(floor(get_nstep() / 4.0), 2) - 0.5)
+          wfld_actual(i) = wfld(i) + 0.12 * (mod(floor(get_nstep() / 4.0), 2) - 0.5)
+       end if
+    end do
+  end do
+
+end subroutine scm_bruteforce_omega
 
 subroutine apply_SC_forcing(elem,hvcoord,tl,n,t_before_advance,nets,nete)
 ! 

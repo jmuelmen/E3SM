@@ -171,7 +171,7 @@ subroutine stepon_run1( dtime_out, phys_state, phys_tend,               &
   use control_mod, only: ftype
   use physics_buffer, only : physics_buffer_desc
   use hycoef,      only: hyam, hybm
-  use se_single_column_mod, only: scm_setfield, scm_setinitial
+  use se_single_column_mod, only: scm_setfield, scm_setinitial, scm_bruteforce_omega
   implicit none
 !
 ! !OUTPUT PARAMETERS:
@@ -210,6 +210,9 @@ subroutine stepon_run1( dtime_out, phys_state, phys_tend,               &
     iop_update_phase1 = .true. 
     if (doiopupdate) call readiopdata( iop_update_phase1,hyam,hybm )
     call scm_setfield(elem,iop_update_phase1)       
+    ! jmu omega fluctuations experiment:
+    ! regardless of iop file update, add a fluctuating component to omega to simulate waves "sloshing around" in the 3D model
+    call scm_bruteforce_omega(elem, iop_update_phase1)
   endif 
   
    call t_barrierf('sync_d_p_coupling', mpicom)
