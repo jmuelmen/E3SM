@@ -139,7 +139,7 @@ subroutine scm_bruteforce_omega(elem,iop_update_phase1)
        if (have_omega .and. iop_update_phase1) then
           ! add a time-dependent offset of +- 0.06 Pa s^-1 (~50 hPa d^-1) that switches signs every 4 time steps
           elem(ie)%derived%omega_p(:,:,i) = wfld(i) + 0.12 * (mod(floor(get_nstep() / 4.0), 2) - 0.5)
-          wfld_actual(i) = wfld(i) + 0.12 * (mod(floor(get_nstep() / 4.0), 2) - 0.5)
+          !! wfld_actual(i) = wfld(i) + 0.12 * (mod(floor(get_nstep() / 4.0), 2) - 0.5)
        end if
     end do
   end do

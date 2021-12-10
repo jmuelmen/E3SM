@@ -167,11 +167,12 @@ subroutine stepon_run1( dtime_out, phys_state, phys_tend,               &
   
   use dp_coupling, only: d_p_coupling
   use time_mod,    only: tstep      ! dynamics timestep
-  use time_manager, only: is_last_step
+  use time_manager, only: is_last_step, get_nstep
   use control_mod, only: ftype
   use physics_buffer, only : physics_buffer_desc
   use hycoef,      only: hyam, hybm
   use se_single_column_mod, only: scm_setfield, scm_setinitial, scm_bruteforce_omega
+  use scamMod, only: wfld
   implicit none
 !
 ! !OUTPUT PARAMETERS:
@@ -210,9 +211,12 @@ subroutine stepon_run1( dtime_out, phys_state, phys_tend,               &
     iop_update_phase1 = .true. 
     if (doiopupdate) call readiopdata( iop_update_phase1,hyam,hybm )
     call scm_setfield(elem,iop_update_phase1)       
-    ! jmu omega fluctuations experiment:
-    ! regardless of iop file update, add a fluctuating component to omega to simulate waves "sloshing around" in the 3D model
-    call scm_bruteforce_omega(elem, iop_update_phase1)
+    !! jmu omega fluctuations experiment:
+    !! regardless of iop file update, add a fluctuating component to omega to simulate waves "sloshing around" in the 3D model
+    ! call scm_bruteforce_omega(elem, iop_update_phase1)
+    !! switch sign on vertical wind field every 4 time steps
+    if (mod(get_nstep(), 4) == 0) wfld(:) = -1.0_r8 * wfld(:)
+    
   endif 
   
    call t_barrierf('sync_d_p_coupling', mpicom)
