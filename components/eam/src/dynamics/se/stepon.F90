@@ -172,7 +172,7 @@ subroutine stepon_run1( dtime_out, phys_state, phys_tend,               &
   use physics_buffer, only : physics_buffer_desc
   use hycoef,      only: hyam, hybm
   use se_single_column_mod, only: scm_setfield, scm_setinitial, scm_bruteforce_omega
-  use scamMod, only: wfld
+  use scamMod, only: wfld, wfld_actual
   implicit none
 !
 ! !OUTPUT PARAMETERS:
@@ -213,10 +213,12 @@ subroutine stepon_run1( dtime_out, phys_state, phys_tend,               &
     call scm_setfield(elem,iop_update_phase1)       
     !! jmu omega fluctuations experiment:
     !! regardless of iop file update, add a fluctuating component to omega to simulate waves "sloshing around" in the 3D model
+    !! note: the problem with this approach is that it only updates the omega diagnostic, not the wfld variable actually used in the dynamics 
     ! call scm_bruteforce_omega(elem, iop_update_phase1)
     !! switch sign on vertical wind field every 4 time steps
-    if (mod(get_nstep(), 4) == 0) wfld(:) = -1.0_r8 * wfld(:)
-    
+    ! if (mod(get_nstep(), 4) == 0) wfld(:) = -1.0_r8 * wfld(:)
+    !! third try: add fluctuating component to wfld directly; wfld_actual remembers what was last read; amplitude: ~100 hPa/d
+    wfld(:) = wfld_actual(:) + 0.24 * (mod(get_nstep(), 2) - 0.5)
   endif 
   
    call t_barrierf('sync_d_p_coupling', mpicom)

@@ -128,6 +128,7 @@ module scamMod
   real(r8), public ::      asdifobs(1)         ! observed asdif
 
   real(r8), public ::      wfld(plev)          ! Vertical motion (slt)
+  real(r8), public ::      wfld_actual(plev)          ! Vertical motion (slt)
   real(r8), public ::      wfldh(plevp)        ! Vertical motion (slt)
   real(r8), public ::      divq(plev,pcnst)    ! Divergence of moisture
   real(r8), public ::      divt(plev)          ! Divergence of temperature
@@ -1460,6 +1461,7 @@ endif !scm_observed_aero
         endif
      else
         have_omega = .true.
+        wfld_actual(:) = wfld(:)
      endif     
      
      ! If REPLAY is used, then need to read in the global
