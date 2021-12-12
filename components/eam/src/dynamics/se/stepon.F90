@@ -217,8 +217,8 @@ subroutine stepon_run1( dtime_out, phys_state, phys_tend,               &
     ! call scm_bruteforce_omega(elem, iop_update_phase1)
     !! switch sign on vertical wind field every 4 time steps
     ! if (mod(get_nstep(), 4) == 0) wfld(:) = -1.0_r8 * wfld(:)
-    !! third try: add fluctuating component to wfld directly; wfld_actual remembers what was last read; amplitude: ~100 hPa/d
-    wfld(:) = wfld_actual(:) + 0.24 * (mod(get_nstep(), 2) - 0.5)
+    !! third try: add fluctuating component to wfld directly; wfld_actual remembers what was last read; amplitude: ~200 hPa/d
+    wfld(:) = wfld_actual(:) + 0.48 * (mod(floor(get_nstep() / 4.0), 2) - 0.5)
   endif 
   
    call t_barrierf('sync_d_p_coupling', mpicom)
