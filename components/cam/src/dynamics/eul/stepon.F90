@@ -262,6 +262,7 @@ subroutine stepon_run3( ztodt, cam_out, phys_state, dyn_in, dyn_out )
   use eul_control_mod,only: eul_nsplit
   use eul_single_column_mod, only: scm_setinitial, scm_setfields
   use hycoef,         only: hyam, hybm
+  use shr_const_mod,  only: shr_const_pi
   real(r8), intent(in) :: ztodt            ! twice time step unless nstep=0
   type(cam_out_t), intent(inout) :: cam_out(begchunk:endchunk)
   type(physics_state), intent(in):: phys_state(begchunk:endchunk)
@@ -282,8 +283,8 @@ subroutine stepon_run3( ztodt, cam_out, phys_state, dyn_in, dyn_out )
 
      !! jmu omega fluctuations experiment:
      !! add fluctuating component to wfld directly; wfld_actual remembers what was last read; amplitude: ~200 hPa/d
-     wfld(:) = wfld_actual(:) + 0.48 * (mod(floor(get_nstep() / 4.0), 2) - 0.5)
-     wfldh(:) = wfldh_actual(:) + 0.48 * (mod(floor(get_nstep() / 4.0), 2) - 0.5)
+     wfld(:) = wfld_actual(:) * cos(2.0 * shr_const_pi * get_nstep() / 4.0)
+     wfldh(:) = wfldh_actual(:) * cos(2.0 * shr_const_pi * get_nstep() / 4.0)
      
   endif
 
