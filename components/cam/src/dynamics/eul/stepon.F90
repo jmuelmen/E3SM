@@ -283,8 +283,8 @@ subroutine stepon_run3( ztodt, cam_out, phys_state, dyn_in, dyn_out )
 
      !! jmu omega fluctuations experiment:
      !! add fluctuating component to wfld directly; wfld_actual remembers what was last read; amplitude: ~200 hPa/d
-     wfld(:) = wfld_actual(:) * cos(2.0 * shr_const_pi * get_nstep() / 4.0)
-     wfldh(:) = wfldh_actual(:) * cos(2.0 * shr_const_pi * get_nstep() / 4.0)
+     wfld(:) = wfld_actual(:) * (1.0 + 5.0 * cos(2.0 * shr_const_pi * get_nstep() / 4.0))
+     wfldh(:) = wfldh_actual(:) * (1.0 + 5.0 * cos(2.0 * shr_const_pi * get_nstep() / 4.0))
      
   endif
 
