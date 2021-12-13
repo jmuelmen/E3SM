@@ -128,7 +128,9 @@ module scamMod
   real(r8), public ::      asdifobs(1)         ! observed asdif
 
   real(r8), public ::      wfld(plev)          ! Vertical motion (slt)
+  real(r8), public ::      wfld_actual(plev)          ! Vertical motion (slt)
   real(r8), public ::      wfldh(plevp)        ! Vertical motion (slt)
+  real(r8), public ::      wfldh_actual(plevp)        ! Vertical motion (slt)
   real(r8), public ::      divq(plev,pcnst)    ! Divergence of moisture
   real(r8), public ::      divt(plev)          ! Divergence of temperature
   real(r8), public ::      divu(plev)          ! Horiz Divergence of E/W
@@ -1300,6 +1302,7 @@ endif !scm_observed_aero
        endif
      else
        have_omega = .true.
+       wfld_actual(:) = wfld(:)
      endif
 
      call plevs0(1    ,plon   ,plev    ,psobs   ,pint,pmid ,pdel)
@@ -1316,6 +1319,7 @@ endif !scm_observed_aero
      end do
 
      wfldh(plevp) = 0.0_r8
+     wfldh_actual(:) = wfldh(:)
 
 
      status = nf90_inq_varid( ncid, 'usrf', varid   )

@@ -15,10 +15,12 @@ module stepon
   use camsrfexch,       only: cam_out_t     
   use ppgrid,           only: begchunk, endchunk
   use physics_types,    only: physics_state, physics_tend
-  use time_manager,     only: is_first_step, is_last_step, get_step_size
+  use time_manager,     only: is_first_step, is_last_step, get_step_size, &
+                              get_nstep
   use scamMod,          only: setiopupdate, readiopdata, &   
                               use_iop, doiopupdate, use_pert_frc, &
-			      wfld, wfldh, single_column
+			      wfld, wfldh, wfld_actual, wfldh_actual, &
+                              single_column
   use perf_mod
 
   implicit none
@@ -277,7 +279,11 @@ subroutine stepon_run3( ztodt, cam_out, phys_state, dyn_in, dyn_out )
        call readiopdata( iop_update_surface,hyam,hybm )
        call scm_setfields()
      endif
-     
+
+     !! jmu omega fluctuations experiment:
+     !! add fluctuating component to wfld directly; wfld_actual remembers what was last read; amplitude: ~200 hPa/d
+     wfld(:) = wfld_actual(:) + 0.48 * (mod(floor(get_nstep() / 4.0), 2) - 0.5)
+     wfldh(:) = wfldh_actual(:) + 0.48 * (mod(floor(get_nstep() / 4.0), 2) - 0.5)
      
   endif
 
